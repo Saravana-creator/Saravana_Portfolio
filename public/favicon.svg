@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#0F172A"/>
+  <!-- Border -->
+  <rect x="2" y="2" width="60" height="60" rx="10" stroke="#4F46E5" stroke-width="3" fill="none"/>
+  <!-- Letter S -->
+  <text
+    x="32"
+    y="46"
+    font-family="Georgia, serif"
+    font-size="40"
+    font-weight="bold"
+    fill="#4F46E5"
+    text-anchor="middle"
+    dominant-baseline="auto"
+  >S</text>
+  <!-- Accent dot -->
+  <circle cx="46" cy="18" r="4" fill="#06B6D4"/>
+</svg>
