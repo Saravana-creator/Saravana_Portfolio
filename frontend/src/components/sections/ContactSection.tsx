@@ -1,17 +1,13 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, Mail, MapPin, Github, Linkedin } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 import { staggerContainer, staggerItem, fadeInLeft, fadeInRight } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import personal from '@/data/personal';
 import type { ContactForm } from '@/types';
 
-// ── EmailJS credentials (set in .env.local — never commit secrets) ───────────
-// Copy .env.example → .env.local and fill in your values from emailjs.com
-const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID  as string;
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string;
-const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  as string;
+// ── Backend API Configuration ────────────────────────────────────────────────
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/contact';
 // ─────────────────────────────────────────────────────────────────────────────
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
@@ -34,24 +30,35 @@ export default function ContactSection() {
     setErrMsg('');
 
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          from_name:    form.name,
-          from_email:   form.email,
-          subject:      form.subject,
-          message:      form.message,
-          to_email:     personal.email,
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        EMAILJS_PUBLIC_KEY,
-      );
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          message: form.message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Extract validation errors or standard error message
+        const message = data.errors 
+          ? data.errors.map((e: any) => e.msg).join(' ') 
+          : (data.error || 'Failed to send message.');
+        throw new Error(message);
+      }
+
       setStatus('success');
       setForm(INITIAL);
-    } catch (err) {
-      console.error('EmailJS error:', err);
+    } catch (err: any) {
+      console.error('Contact form error:', err);
       setStatus('error');
-      setErrMsg('Failed to send message. Please email me directly at ' + personal.email);
+      setErrMsg(err.message || 'Failed to send message. Please email me directly at ' + personal.email);
     }
   };
 
