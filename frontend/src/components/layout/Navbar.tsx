@@ -72,7 +72,8 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <a
               href={personal.resumeUrl}
-              download
+              target="_blank"
+              rel="noreferrer"
               className="brutal-btn bg-primary text-white flex items-center gap-2 text-sm"
             >
               <Download size={14} /> Resume
@@ -115,7 +116,8 @@ export default function Navbar() {
             ))}
             <a
               href={personal.resumeUrl}
-              download
+              target="_blank"
+              rel="noreferrer"
               className="brutal-btn bg-primary text-white flex items-center gap-2 mt-4"
             >
               <Download size={16} /> Resume

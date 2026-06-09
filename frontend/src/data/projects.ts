@@ -10,14 +10,15 @@ const projects: Project[] = [
     githubUrl: 'https://github.com/pradeep-1200/CodeNeticz-KHacks-3.0',
     category: 'ai',
     featured: true,
-    year: 2025,
+    year: 2026,
   },
   {
     id: 'helpai',
     title: 'HelpAI — RAG-Based NCERT Study Assistant',
     description:
-      'An intelligent study assistant for students in grades 6–10 built using Retrieval-Augmented Generation (RAG). Students can ask questions about their NCERT curriculum and receive accurate, context-aware answers powered entirely by open-source language models — no expensive API costs.',
+      'An intelligent study assistant for students in grades 6-10 built using Retrieval-Augmented Generation (RAG). Students can ask questions about their NCERT curriculum and receive accurate, context-aware answers powered entirely by open-source language models — no expensive API costs.',
     techStack: ['Python', 'LangChain', 'FAISS', 'Open-Source LLMs', 'FastAPI', 'React'],
+    githubUrl: 'https://github.com/Saravana-creator/ncert_2.git',
     category: 'ai',
     featured: true,
     year: 2025,
@@ -28,9 +29,10 @@ const projects: Project[] = [
     description:
       'A full-stack e-commerce platform connecting traditional handcrafted artisans directly with buyers. Features include product listings, artisan profiles, cart & checkout, and an admin dashboard — built to preserve and promote authentic handcraft culture in the digital age.',
     techStack: ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS', 'Cloudinary'],
+    githubUrl: 'https://github.com/Saravana-creator/Loom_Look.git',
     category: 'fullstack',
     featured: true,
-    year: 2024,
+    year: 2026,
   },
   {
     id: 'portfolio',
@@ -38,10 +40,10 @@ const projects: Project[] = [
     description:
       'This very portfolio — built with a Neo-Brutalism + Glassmorphism design system. Features include a custom loading screen, animated skill bars, project filter tabs, scroll-reveal animations, and a contact form. Optimised for performance and SEO.',
     techStack: ['React', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'Vite', 'EmailJS'],
-    githubUrl: 'https://github.com/Saravana-creator',
+    githubUrl: 'https://github.com/Saravana-creator/Saravana_Portfolio.git',
     category: 'frontend',
     featured: false,
-    year: 2025,
+    year: 2026,
   },
 ];
 

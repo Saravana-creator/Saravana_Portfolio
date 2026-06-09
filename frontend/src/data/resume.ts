@@ -25,8 +25,8 @@ export const education: Education[] = [
     institution: 'Sri Eshwar College of Engineering',
     degree: 'Bachelor of Engineering (B.E)',
     field: 'Computer Science and Engineering',
-    startYear: '2022',
-    endYear: '2026',
+    startYear: '2024',
+    endYear: '2028',
     score: '8.0',
     scoreType: 'CGPA',
     description:
@@ -34,11 +34,11 @@ export const education: Education[] = [
   },
   {
     id: 'edu-school',
-    institution: 'Higher Secondary School',
-    degree: 'Higher Secondary Certificate (XII)',
+    institution: 'Sri Vidhya Bharati Matric Hr.Sec School',
+    degree: 'Higher Secondary',
     field: 'Computer Science, Mathematics, Physics',
-    startYear: '2020',
-    endYear: '2022',
+    startYear: '2023',
+    endYear: '2024',
   },
 ];
 

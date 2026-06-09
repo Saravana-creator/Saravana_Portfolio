@@ -138,7 +138,8 @@ export default function HeroSection() {
               </a>
               <a
                 href={personal.resumeUrl}
-                download
+                target="_blank"
+                rel="noreferrer"
                 className="brutal-btn bg-white text-dark flex items-center gap-2 text-sm"
               >
                 <Download size={14} /> Resume

@@ -5,30 +5,31 @@ const skills: SkillCategory[] = [
     category: 'Frontend',
     color: '#4F46E5',
     skills: [
-      { name: 'React',       level: 90 },
-      { name: 'Next.js',     level: 85 },
-      { name: 'JavaScript',  level: 92 },
-      { name: 'TypeScript',  level: 78 },
-      { name: 'HTML/CSS',    level: 95 },
-      { name: 'Tailwind CSS',level: 88 },
+      { name: 'React',       level: 75 },
+      { name: 'Next.js',     level: 60 },
+      { name: 'JavaScript',  level: 80 },
+      { name: 'TypeScript',  level: 68 },
+      { name: 'HTML/CSS',    level: 85 },
+      { name: 'Tailwind CSS',level: 70 },
     ],
   },
   {
     category: 'Backend',
     color: '#06B6D4',
     skills: [
-      { name: 'Node.js',    level: 87 },
-      { name: 'Express.js', level: 85 },
-      { name: 'Spring Boot',level: 72 },
-      { name: 'REST APIs',  level: 88 },
+      { name: 'Node.js',    level: 82 },
+      { name: 'Express.js', level: 78 },
+      { name: 'Spring Boot',level: 65 },
+      { name: 'REST APIs',  level: 70 },
     ],
   },
   {
     category: 'Database',
     color: '#14B8A6',
     skills: [
-      { name: 'MongoDB', level: 83 },
-      { name: 'MySQL',   level: 80 },
+      { name: 'MongoDB', level: 85 },
+      { name: 'MySQL',   level: 82 },
+      { name:'PostgreSQL', level:78 }
     ],
   },
   {
@@ -45,10 +46,10 @@ const skills: SkillCategory[] = [
     category: 'Tools',
     color: '#F59E0B',
     skills: [
-      { name: 'Git/GitHub', level: 90 },
-      { name: 'VS Code',    level: 95 },
-      { name: 'Postman',    level: 85 },
-      { name: 'Docker',     level: 60 },
+      { name: 'Git/GitHub', level: 88 },
+      { name: 'VS Code',    level: 75 },
+      { name: 'Postman',    level: 70 },
+      { name: 'Docker',     level: 50 },
     ],
   },
 ];
