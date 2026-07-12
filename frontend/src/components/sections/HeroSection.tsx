@@ -138,21 +138,21 @@ export default function HeroSection() {
               </a>
             </motion.div>
 
-            {/* Social links with values */}
+            {/* Social links — icon buttons */}
             <motion.div variants={staggerItem} className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-3">
-                {socialLinks.map(({ icon: Icon, href, label, value }) => (
+              <div className="flex items-center gap-3">
+                {socialLinks.map(({ icon: Icon, href, label }) => (
                   <a
                     key={label}
                     href={href}
                     target="_blank"
                     rel="noreferrer"
                     aria-label={label}
-                    className="flex items-center gap-2 border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors duration-150 group"
-                    style={{ boxShadow: '2px 2px 0 #000' }}
+                    title={label}
+                    className="border-2 border-black p-2.5 hover:bg-black hover:text-white transition-colors duration-150"
+                    style={{ boxShadow: '3px 3px 0 #000' }}
                   >
-                    <Icon size={15} />
-                    <span className="font-mono text-xs font-medium">{value}</span>
+                    <Icon size={18} />
                   </a>
                 ))}
               </div>
