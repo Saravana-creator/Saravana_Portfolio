@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
 import { staggerContainer, staggerItem } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { gsap } from '@/lib/gsap-setup';
 import projects from '@/data/projects';
 import type { Project } from '@/types';
 
@@ -89,14 +90,53 @@ function ProjectCard({ project }: { project: Project }) {
 
 export default function ProjectsSection() {
   const { ref, inView } = useScrollReveal();
+  const sectionRef = useRef<HTMLElement>(null);
   const [filter, setFilter] = useState<Filter>('all');
 
   const filtered = filter === 'all'
     ? projects
     : projects.filter(p => p.category === filter);
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+
+      // ── Label + title reveal ─────────────────────────────────────────────
+      gsap.from('[data-proj="label"]', {
+        clipPath: 'inset(0 100% 0 0)', opacity: 0, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: '[data-proj="label"]', start: 'top 88%' },
+      });
+
+      gsap.from('[data-proj="title-word"]', {
+        y: 60, opacity: 0, duration: 0.65, ease: 'power4.out', stagger: 0.07,
+        scrollTrigger: { trigger: '[data-proj="title"]', start: 'top 88%' },
+      });
+
+      // ── Filter buttons: fan in ───────────────────────────────────────────
+      gsap.from('[data-proj="filter"]', {
+        x: -20, opacity: 0, duration: 0.4, ease: 'power2.out', stagger: 0.08,
+        scrollTrigger: { trigger: '[data-proj="filter"]', start: 'top 90%' },
+      });
+
+      // ── Project cards: stagger in from bottom with slight 3D ─────────────
+      gsap.from('[data-proj="card"]', {
+        y: 60, opacity: 0, rotationX: 8, transformPerspective: 600,
+        duration: 0.65, ease: 'power3.out', stagger: { amount: 0.5, from: 'start' },
+        scrollTrigger: { trigger: '[data-proj="card"]', start: 'top 90%' },
+      });
+
+    }, el);
+
+    return () => { ctx.revert(); };
+  }, []);
+
   return (
-    <section id="projects" className="py-24 bg-white" ref={ref}>
+    <section id="projects" className="py-24 bg-white" ref={(node) => {
+      (sectionRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+    }}>
       <div className="section-container">
         <motion.div
           variants={staggerContainer}
@@ -104,8 +144,12 @@ export default function ProjectsSection() {
           animate={inView ? 'visible' : 'hidden'}
         >
           <motion.div variants={staggerItem} className="mb-12">
-            <span className="section-label">Projects</span>
-            <h2 className="section-title">What I've Built</h2>
+            <span data-proj="label" className="section-label">Projects</span>
+            <h2 data-proj="title" className="section-title overflow-hidden">
+              {["What", "I've", "Built"].map(w => (
+                <span key={w} data-proj="title-word" className="inline-block mr-3">{w}</span>
+              ))}
+            </h2>
             <p className="section-subtitle">A selection of projects I'm proud of</p>
           </motion.div>
 
@@ -114,6 +158,7 @@ export default function ProjectsSection() {
             {FILTERS.map(f => (
               <button
                 key={f}
+                data-proj="filter"
                 onClick={() => setFilter(f)}
                 className={`brutal-btn text-sm capitalize py-2 ${
                   filter === f
@@ -133,7 +178,9 @@ export default function ProjectsSection() {
           >
             <AnimatePresence>
               {filtered.map(project => (
-                <ProjectCard key={project.id} project={project} />
+                <div key={project.id} data-proj="card">
+                  <ProjectCard project={project} />
+                </div>
               ))}
             </AnimatePresence>
           </motion.div>

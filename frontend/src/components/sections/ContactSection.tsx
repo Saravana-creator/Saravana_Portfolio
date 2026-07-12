@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, Mail, MapPin, Github, Linkedin } from 'lucide-react';
 import { staggerContainer, staggerItem, fadeInLeft, fadeInRight } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { gsap } from '@/lib/gsap-setup';
 import personal from '@/data/personal';
 import type { ContactForm } from '@/types';
 
@@ -17,6 +18,7 @@ const INITIAL: ContactForm = { name: '', email: '', subject: '', message: '' };
 
 export default function ContactSection() {
   const { ref, inView } = useScrollReveal();
+  const sectionRef = useRef<HTMLElement>(null);
   const [form, setForm]     = useState<ContactForm>(INITIAL);
   const [status, setStatus] = useState<Status>('idle');
   const [errMsg, setErrMsg] = useState('');
@@ -56,8 +58,57 @@ export default function ContactSection() {
     }
   };
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+
+      // ── Label clip-path reveal ────────────────────────────────────────────
+      gsap.from('[data-contact="label"]', {
+        clipPath: 'inset(0 100% 0 0)', opacity: 0, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: '[data-contact="label"]', start: 'top 88%' },
+      });
+
+      // ── Title word stagger ────────────────────────────────────────────────
+      gsap.from('[data-contact="title-word"]', {
+        y: 60, opacity: 0, duration: 0.65, ease: 'power4.out', stagger: 0.07,
+        scrollTrigger: { trigger: '[data-contact="title"]', start: 'top 88%' },
+      });
+
+      // ── Info panel slides in from left ────────────────────────────────────
+      gsap.from('[data-contact="info"]', {
+        x: -60, opacity: 0, duration: 0.8, ease: 'power3.out',
+        scrollTrigger: { trigger: '[data-contact="info"]', start: 'top 85%' },
+      });
+
+      // ── Social icons pop ─────────────────────────────────────────────────
+      gsap.from('[data-contact="social"]', {
+        scale: 0, opacity: 0, duration: 0.4, ease: 'elastic.out(1.5, 0.5)', stagger: 0.1,
+        scrollTrigger: { trigger: '[data-contact="social"]', start: 'top 90%' },
+      });
+
+      // ── Form slides in from right ─────────────────────────────────────────
+      gsap.from('[data-contact="form"]', {
+        x: 60, opacity: 0, duration: 0.8, ease: 'power3.out',
+        scrollTrigger: { trigger: '[data-contact="form"]', start: 'top 85%' },
+      });
+
+      // ── Form fields cascade in ────────────────────────────────────────────
+      gsap.from('[data-contact="field"]', {
+        y: 24, opacity: 0, duration: 0.5, ease: 'power2.out', stagger: 0.1,
+        scrollTrigger: { trigger: '[data-contact="form"]', start: 'top 80%' },
+      });
+
+    }, el);
+    return () => { ctx.revert(); };
+  }, []);
+
   return (
-    <section id="contact" className="py-24 bg-dark" ref={ref}>
+    <section id="contact" className="py-24 bg-dark" ref={(node) => {
+      (sectionRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+    }}>
       <div className="section-container">
         <motion.div
           variants={staggerContainer}
@@ -65,8 +116,12 @@ export default function ContactSection() {
           animate={inView ? 'visible' : 'hidden'}
         >
           <motion.div variants={staggerItem} className="mb-12">
-            <span className="section-label bg-white text-dark">Contact</span>
-            <h2 className="section-title text-white">Let's Work Together</h2>
+            <span data-contact="label" className="section-label bg-white text-dark">Contact</span>
+            <h2 data-contact="title" className="section-title text-white overflow-hidden">
+              {["Let's", 'Work', 'Together'].map(w => (
+                <span key={w} data-contact="title-word" className="inline-block mr-3">{w}</span>
+              ))}
+            </h2>
             <p className="section-subtitle text-slate-400">I'm always open to new opportunities and collaborations</p>
           </motion.div>
 
@@ -74,6 +129,7 @@ export default function ContactSection() {
             {/* Left — contact info */}
             <motion.div variants={fadeInLeft} className="lg:col-span-2 space-y-6">
               <div
+                data-contact="info"
                 className="border-2 border-white p-6"
                 style={{ boxShadow: '4px 4px 0 #fff' }}
               >
@@ -106,6 +162,7 @@ export default function ContactSection() {
                 ].map(({ icon: Icon, href, label }) => (
                   <a
                     key={label}
+                    data-contact="social"
                     href={href}
                     target="_blank"
                     rel="noreferrer"
@@ -129,6 +186,7 @@ export default function ContactSection() {
             {/* Right — form */}
             <motion.div variants={fadeInRight} className="lg:col-span-3">
               <form
+                data-contact="form"
                 onSubmit={onSubmit}
                 className="border-2 border-white bg-white/5 p-8 space-y-5"
                 style={{ boxShadow: '6px 6px 0 #fff' }}
@@ -137,7 +195,7 @@ export default function ContactSection() {
                 <input type="checkbox" name="botcheck" className="hidden" readOnly />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
+                  <div data-contact="field">
                     <label className="font-mono text-xs text-slate-400 block mb-2">Name *</label>
                     <input
                       name="name"
@@ -148,7 +206,7 @@ export default function ContactSection() {
                       className="brutal-input bg-transparent text-white placeholder:text-slate-600 border-white focus:border-primary"
                     />
                   </div>
-                  <div>
+                  <div data-contact="field">
                     <label className="font-mono text-xs text-slate-400 block mb-2">Email *</label>
                     <input
                       name="email"
@@ -162,7 +220,7 @@ export default function ContactSection() {
                   </div>
                 </div>
 
-                <div>
+                <div data-contact="field">
                   <label className="font-mono text-xs text-slate-400 block mb-2">Subject *</label>
                   <input
                     name="subject"
@@ -174,7 +232,7 @@ export default function ContactSection() {
                   />
                 </div>
 
-                <div>
+                <div data-contact="field">
                   <label className="font-mono text-xs text-slate-400 block mb-2">Message *</label>
                   <textarea
                     name="message"

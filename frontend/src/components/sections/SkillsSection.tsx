@@ -1,31 +1,23 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import {
-  Monitor,
-  Server,
-  Database,
-  Code2,
-  Wrench,
-  type LucideIcon,
-} from 'lucide-react';
 import { staggerContainer, staggerItem } from '@/lib/animations';
-import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { gsap } from '@/lib/gsap-setup';
 import skills from '@/data/skills';
 import type { SkillCategory } from '@/types';
 
-// ── Category config — Lucide icons replace emojis ──────────────────────────
+// ── Category config — Restore the bold custom emojis, no default fallback emoji ──
 const categoryMeta: Record<string, {
-  Icon: LucideIcon;
+  emoji: string;
   bg: string;
   accent: string;
   shadow: string;
 }> = {
-  Frontend:  { Icon: Monitor,  bg: 'from-violet-500/10 to-indigo-500/5',   accent: '#4F46E5', shadow: 'rgba(79,70,229,0.25)'   },
-  Backend:   { Icon: Server,   bg: 'from-cyan-500/10 to-blue-500/5',       accent: '#06B6D4', shadow: 'rgba(6,182,212,0.25)'   },
-  Database:  { Icon: Database, bg: 'from-teal-500/10 to-emerald-500/5',    accent: '#14B8A6', shadow: 'rgba(20,184,166,0.25)'  },
-  Languages: { Icon: Code2,    bg: 'from-purple-500/10 to-fuchsia-500/5',  accent: '#8B5CF6', shadow: 'rgba(139,92,246,0.25)'  },
-  Tools:     { Icon: Wrench,   bg: 'from-amber-500/10 to-orange-500/5',    accent: '#F59E0B', shadow: 'rgba(245,158,11,0.25)'  },
+  Frontend:  { emoji: '⚡', bg: 'from-violet-500/10 to-indigo-500/5',   accent: '#4F46E5', shadow: 'rgba(79,70,229,0.25)'   },
+  Backend:   { emoji: '🛠', bg: 'from-cyan-500/10 to-blue-500/5',       accent: '#06B6D4', shadow: 'rgba(6,182,212,0.25)'   },
+  Database:  { emoji: '🗄', bg: 'from-teal-500/10 to-emerald-500/5',    accent: '#14B8A6', shadow: 'rgba(20,184,166,0.25)'  },
+  Languages: { emoji: '💬', bg: 'from-purple-500/10 to-fuchsia-500/5',  accent: '#8B5CF6', shadow: 'rgba(139,92,246,0.25)'  },
+  Tools:     { emoji: '🔧', bg: 'from-amber-500/10 to-orange-500/5',    accent: '#F59E0B', shadow: 'rgba(245,158,11,0.25)'  },
 };
 
 function levelLabel(level: number) {
@@ -36,11 +28,11 @@ function levelLabel(level: number) {
 }
 
 // ── 3D tilt card ────────────────────────────────────────────────────────────
-function TiltCard({ category }: { category: SkillCategory }) {
+function TiltCard({ category, sectionInView }: { category: SkillCategory; sectionInView: boolean }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const meta = categoryMeta[category.category] ?? {
-    Icon: Wrench,
+    emoji: '', // Remove default emoji
     bg: 'from-slate-500/10 to-gray-500/5',
     accent: '#64748B',
     shadow: 'rgba(100,116,139,0.25)',
@@ -72,15 +64,9 @@ function TiltCard({ category }: { category: SkillCategory }) {
     scale.set(1);
   };
 
-  // Per-card: animate bars only when THIS card is fully in view
-  const { ref: inViewRef, inView } = useInView({
-    threshold: 0.85,   // 85% of the card must be visible
-    triggerOnce: true,
-  });
-
   return (
     <div
-      ref={inViewRef}
+      data-skills="card"
       style={{ perspective: '900px' }}
     >
       <motion.div
@@ -94,10 +80,6 @@ function TiltCard({ category }: { category: SkillCategory }) {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         className="relative rounded-2xl border-2 border-black overflow-hidden bg-white cursor-default"
-        whileInView={{ opacity: 1, y: 0 }}
-        initial={{ opacity: 0, y: 30 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true, amount: 0.3 }}
       >
         {/* Dynamic box-shadow driven by tilt */}
         <motion.div
@@ -137,17 +119,18 @@ function TiltCard({ category }: { category: SkillCategory }) {
           {/* Header */}
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              {/* 3D icon box */}
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center border-2 border-black bg-white"
-                style={{
-                  boxShadow: `3px 3px 0 #000, inset 0 1px 0 rgba(255,255,255,0.8)`,
-                  transform: 'translateZ(8px)',
-                  color: meta.accent,
-                }}
-              >
-                <meta.Icon size={20} />
-              </div>
+              {/* 3D emoji box (if exists) */}
+              {meta.emoji && (
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center text-xl border-2 border-black bg-white"
+                  style={{
+                    boxShadow: `3px 3px 0 #000, inset 0 1px 0 rgba(255,255,255,0.8)`,
+                    transform: 'translateZ(8px)',
+                  }}
+                >
+                  {meta.emoji}
+                </div>
+              )}
               <h3 className="font-display font-bold text-base text-dark" style={{ transform: 'translateZ(4px)' }}>
                 {category.category}
               </h3>
@@ -166,7 +149,7 @@ function TiltCard({ category }: { category: SkillCategory }) {
             </span>
           </div>
 
-          {/* Skills — bars animate only when card is in view */}
+          {/* Skills — progress bars animate only when the entire section is shown */}
           <div className="space-y-3">
             {category.skills.map((skill, i) => (
               <div key={skill.name} style={{ transform: 'translateZ(2px)' }}>
@@ -188,7 +171,7 @@ function TiltCard({ category }: { category: SkillCategory }) {
                   </span>
                 </div>
 
-                {/* Progress — fires ONLY when this card is ≥85% visible */}
+                {/* Progress — fires ONLY when all skills are shown (section is in view) */}
                 <div className="h-1.5 bg-slate-100 rounded-full border border-black/5 overflow-hidden">
                   <motion.div
                     className="h-full rounded-full"
@@ -196,7 +179,7 @@ function TiltCard({ category }: { category: SkillCategory }) {
                       background: `linear-gradient(90deg, ${meta.accent}99, ${meta.accent})`,
                     }}
                     initial={{ width: 0 }}
-                    animate={inView ? { width: `${skill.level}%` } : { width: 0 }}
+                    animate={sectionInView ? { width: `${skill.level}%` } : { width: 0 }}
                     transition={{ duration: 1.0, ease: 'easeOut', delay: i * 0.08 }}
                   />
                 </div>
@@ -211,10 +194,47 @@ function TiltCard({ category }: { category: SkillCategory }) {
 
 // ── Section ─────────────────────────────────────────────────────────────────
 export default function SkillsSection() {
-  const { ref, inView } = useScrollReveal();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Monitor viewport visibility for the entire skills section (animating skills progress only when shown)
+  const { ref: inViewRef, inView } = useInView({
+    threshold: 0.3, // Trigger when 30% of the section is visible (ensures all top sections/cards are fully visible)
+    triggerOnce: true,
+  });
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      // ── Section label clip-path reveal ───────────────────────────────────
+      gsap.from('[data-skills="label"]', {
+        clipPath: 'inset(0 100% 0 0)',
+        opacity: 0, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: '[data-skills="label"]', start: 'top 88%' },
+      });
+
+      // ── Title: words stagger up ──────────────────────────────────────────
+      gsap.from('[data-skills="title-word"]', {
+        y: 60, opacity: 0, duration: 0.65, ease: 'power4.out', stagger: 0.07,
+        scrollTrigger: { trigger: '[data-skills="title"]', start: 'top 88%' },
+      });
+
+      // ── Cards stagger entrance with 3D feel ──────────────────────────────
+      gsap.from('[data-skills="card"]', {
+        y: 60, opacity: 0, rotationX: 10, transformPerspective: 900,
+        duration: 0.75, ease: 'power3.out', stagger: 0.12,
+        scrollTrigger: { trigger: '[data-skills="card"]', start: 'top 85%' },
+      });
+    }, el);
+
+    return () => { ctx.revert(); };
+  }, []);
 
   return (
-    <section id="skills" className="py-24 bg-[#F8FAFC]" ref={ref}>
+    <section id="skills" className="py-24 bg-[#F8FAFC]" ref={(node) => {
+      (sectionRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      inViewRef(node);
+    }}>
       <div className="section-container">
         <motion.div
           variants={staggerContainer}
@@ -223,15 +243,19 @@ export default function SkillsSection() {
         >
           {/* Header */}
           <motion.div variants={staggerItem} className="mb-14">
-            <span className="section-label">Skills</span>
-            <h2 className="section-title">What I Work With</h2>
+            <span data-skills="label" className="section-label">Skills</span>
+            <h2 data-skills="title" className="section-title overflow-hidden">
+              {['What', 'I', 'Work', 'With'].map(w => (
+                <span key={w} data-skills="title-word" className="inline-block mr-3">{w}</span>
+              ))}
+            </h2>
             <p className="section-subtitle">Technologies and tools I use to build things</p>
           </motion.div>
 
           {/* 3D tilt cards grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
             {skills.map((category) => (
-              <TiltCard key={category.category} category={category} />
+              <TiltCard key={category.category} category={category} sectionInView={inView} />
             ))}
           </div>
         </motion.div>

@@ -1,7 +1,9 @@
+import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { Github, Linkedin, Mail, ArrowDown } from 'lucide-react';
 import { fadeInRight, staggerContainer, staggerItem } from '@/lib/animations';
+import { gsap } from '@/lib/gsap-setup';
 import personal from '@/data/personal';
 
 // Skeuomorphic laptop SVG component
@@ -69,14 +71,92 @@ function SkeuoLaptop() {
 }
 
 export default function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+
   const socialLinks = [
     { icon: Github,   href: personal.social.github,        label: 'GitHub',   value: 'Saravana-creator' },
     { icon: Linkedin, href: personal.social.linkedin,       label: 'LinkedIn', value: 'saravana-perumal-m' },
     { icon: Mail,     href: `mailto:${personal.email}`,     label: 'Gmail',    value: personal.email },
   ];
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+
+      // ── Badge slide-in ───────────────────────────────────────────────────
+      gsap.from('[data-gsap="badge"]', {
+        y: -20, opacity: 0, duration: 0.6, ease: 'back.out(2)', delay: 0.1,
+      });
+
+      // ── Headline: each word clips up from below ──────────────────────────
+      const words = el.querySelectorAll('[data-gsap="word"]');
+      gsap.from(words, {
+        y: '100%', opacity: 0, duration: 0.7,
+        ease: 'power4.out', stagger: 0.08, delay: 0.3,
+      });
+
+      // ── Bio fade + slight upward drift ──────────────────────────────────
+      gsap.from('[data-gsap="bio"]', {
+        opacity: 0, y: 30, duration: 0.8, ease: 'power2.out', delay: 0.65,
+      });
+
+      // ── CTA button elastic bounce ────────────────────────────────────────
+      gsap.from('[data-gsap="cta"]', {
+        scale: 0.7, opacity: 0, duration: 0.6,
+        ease: 'elastic.out(1, 0.5)', stagger: 0.1, delay: 0.85,
+      });
+
+      // ── Social icons pop in with stagger ────────────────────────────────
+      gsap.from('[data-gsap="social"]', {
+        scale: 0, rotation: -15, opacity: 0, duration: 0.5,
+        ease: 'back.out(2.5)', stagger: 0.07, delay: 1.0,
+      });
+
+      // ── Stats: counter increment on scroll ──────────────────────────────
+      el.querySelectorAll<HTMLElement>('[data-gsap="stat"]').forEach(stat => {
+        gsap.from(stat, {
+          opacity: 0, y: 24, scale: 0.85, duration: 0.5,
+          ease: 'back.out(1.7)',
+          scrollTrigger: {
+            trigger: stat,
+            start: 'top 90%',
+            toggleActions: 'play none none none',
+          },
+        });
+      });
+
+      // ── Laptop parallax: drifts up as you scroll hero ───────────────────
+      gsap.to('[data-gsap="laptop"]', {
+        y: -60,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.5,
+        },
+      });
+
+      // ── Background blobs parallax ────────────────────────────────────────
+      gsap.to('[data-gsap="blob-1"]', {
+        y: -80, x: 30,
+        ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: 2 },
+      });
+      gsap.to('[data-gsap="blob-2"]', {
+        y: -50, x: -20,
+        ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: 1.5 },
+      });
+
+    }, el);
+
+    return () => { ctx.revert(); };
+  }, []);
+
   return (
-    <section className="min-h-screen flex items-center relative overflow-hidden bg-[#F8FAFC] pt-16">
+    <section ref={sectionRef} className="min-h-screen flex items-center relative overflow-hidden bg-[#F8FAFC] pt-16">
       {/* Background grid */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -87,8 +167,8 @@ export default function HeroSection() {
       />
 
       {/* Blobs */}
-      <div className="absolute top-20 right-0 w-96 h-96 rounded-full bg-primary/10 blur-3xl animate-float-slow" />
-      <div className="absolute bottom-20 left-0 w-72 h-72 rounded-full bg-secondary/10 blur-3xl animate-float" />
+      <div data-gsap="blob-1" className="absolute top-20 right-0 w-96 h-96 rounded-full bg-primary/10 blur-3xl animate-float-slow" />
+      <div data-gsap="blob-2" className="absolute bottom-20 left-0 w-72 h-72 rounded-full bg-secondary/10 blur-3xl animate-float" />
 
       <div className="section-container w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-12">
@@ -99,15 +179,16 @@ export default function HeroSection() {
             animate="visible"
           >
             <motion.div variants={staggerItem} className="mb-4">
-              <span className="section-label">👋 Available for opportunities</span>
+              <span data-gsap="badge" className="section-label">👋 Available for opportunities</span>
             </motion.div>
 
             <motion.h1
               variants={staggerItem}
-              className="font-display font-black text-4xl sm:text-5xl lg:text-[3.25rem] text-dark leading-tight mb-4 whitespace-nowrap"
+              className="font-display font-black text-4xl sm:text-5xl lg:text-[3.25rem] text-dark leading-tight mb-4 whitespace-nowrap overflow-hidden"
             >
-              Hi, I'm{' '}
-              <span className="gradient-text">{personal.firstName}</span>
+              <span data-gsap="word" className="inline-block">Hi,</span>{' '}
+              <span data-gsap="word" className="inline-block">I'm</span>{' '}
+              <span data-gsap="word" className="inline-block gradient-text">{personal.firstName}</span>
             </motion.h1>
 
             <motion.div variants={staggerItem} className="mb-6">
@@ -121,6 +202,7 @@ export default function HeroSection() {
             </motion.div>
 
             <motion.p
+              data-gsap="bio"
               variants={staggerItem}
               className="font-body text-slate-500 text-lg leading-relaxed max-w-lg mb-8"
             >
@@ -130,6 +212,7 @@ export default function HeroSection() {
             {/* CTAs */}
             <motion.div variants={staggerItem} className="flex flex-wrap gap-4 mb-8">
               <a
+                data-gsap="cta"
                 href="#projects"
                 onClick={e => { e.preventDefault(); document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' }); }}
                 className="brutal-btn bg-primary text-white text-sm"
@@ -144,6 +227,7 @@ export default function HeroSection() {
                 {socialLinks.map(({ icon: Icon, href, label }) => (
                   <a
                     key={label}
+                    data-gsap="social"
                     href={href}
                     target="_blank"
                     rel="noreferrer"
@@ -162,6 +246,7 @@ export default function HeroSection() {
 
           {/* Right — skeuomorphic laptop */}
           <motion.div
+            data-gsap="laptop"
             variants={fadeInRight}
             initial="hidden"
             animate="visible"
@@ -181,6 +266,7 @@ export default function HeroSection() {
           {personal.stats.map(stat => (
             <motion.div
               key={stat.label}
+              data-gsap="stat"
               variants={staggerItem}
               className="glass-card text-center"
             >
