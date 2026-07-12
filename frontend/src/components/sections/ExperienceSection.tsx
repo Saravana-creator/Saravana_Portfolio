@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { Briefcase } from 'lucide-react';
-import { staggerContainer, staggerItem } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { gsap } from '@/lib/gsap-setup';
 import { experience } from '@/data/resume';
@@ -14,7 +12,7 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 export default function ExperienceSection() {
-  const { ref, inView } = useScrollReveal();
+  const { ref } = useScrollReveal();
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -42,7 +40,7 @@ export default function ExperienceSection() {
           trigger: '[data-exp="center-line"]',
           start: 'top 80%',
           end: 'bottom 20%',
-          scrub: 1,          // draws as you scroll — GSAP signature move
+          scrub: 1,
         },
       });
 
@@ -79,12 +77,8 @@ export default function ExperienceSection() {
       else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
     }}>
       <div className="section-container">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-        >
-          <motion.div variants={staggerItem} className="mb-12">
+        <div>
+          <div className="mb-12">
             <span data-exp="label" className="section-label">Experience</span>
             <h2 data-exp="title" className="section-title overflow-hidden">
               {["Where", "I've", "Worked"].map(w => (
@@ -92,13 +86,10 @@ export default function ExperienceSection() {
               ))}
             </h2>
             <p className="section-subtitle">My professional journey so far</p>
-          </motion.div>
+          </div>
 
           {experience.length === 0 ? (
-            <motion.div
-              variants={staggerItem}
-              className="brutal-card p-12 text-center"
-            >
+            <div className="brutal-card p-12 text-center">
               <Briefcase size={32} className="mx-auto text-slate-300 mb-3" />
               <p className="font-display font-bold text-lg text-slate-400">
                 Actively seeking opportunities!
@@ -106,7 +97,7 @@ export default function ExperienceSection() {
               <p className="font-body text-sm text-slate-400 mt-1">
                 Open to internships and entry-level roles.
               </p>
-            </motion.div>
+            </div>
           ) : (
             <div className="relative">
               {/* Center line — scrubs on scroll */}
@@ -117,9 +108,8 @@ export default function ExperienceSection() {
 
               <div className="space-y-10">
                 {experience.map((exp, i) => (
-                  <motion.div
+                  <div
                     key={exp.id}
-                    variants={staggerItem}
                     className={`relative lg:flex ${i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-start gap-8`}
                   >
                     {/* Card */}
@@ -166,12 +156,12 @@ export default function ExperienceSection() {
                       className="hidden lg:flex absolute left-1/2 -translate-x-1/2 top-6 w-5 h-5 bg-primary border-2 border-black items-center justify-center"
                       style={{ boxShadow: '2px 2px 0 #000' }}
                     />
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

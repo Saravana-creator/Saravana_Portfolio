@@ -1,7 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { staggerContainer, staggerItem } from '@/lib/animations';
 import { gsap } from '@/lib/gsap-setup';
 import skills from '@/data/skills';
 import type { SkillCategory } from '@/types';
@@ -204,9 +203,9 @@ export default function SkillsSection() {
         scrollTrigger: { trigger: '[data-skills="title"]', start: 'top 88%' },
       });
 
-      // ── Cards stagger entrance with 3D feel (Triggered by parent grid) ──
+      // ── Cards stagger entrance (Triggered by parent grid) ──
       gsap.from('[data-skills="card"]', {
-        y: 60, opacity: 0, rotationX: 10, transformPerspective: 900,
+        y: 50, opacity: 0,
         duration: 0.75, ease: 'power3.out', stagger: 0.12,
         scrollTrigger: { trigger: '[data-skills="grid"]', start: 'top 85%' },
       });
@@ -221,13 +220,9 @@ export default function SkillsSection() {
       inViewRef(node);
     }}>
       <div className="section-container">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-        >
+        <div>
           {/* Header */}
-          <motion.div variants={staggerItem} className="mb-14">
+          <div className="mb-14">
             <span data-skills="label" className="section-label">Skills</span>
             <h2 data-skills="title" className="section-title overflow-hidden">
               {['What', 'I', 'Work', 'With'].map(w => (
@@ -235,7 +230,7 @@ export default function SkillsSection() {
               ))}
             </h2>
             <p className="section-subtitle">Technologies and tools I use to build things</p>
-          </motion.div>
+          </div>
 
           {/* 3D tilt cards grid */}
           <div data-skills="grid" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -243,7 +238,7 @@ export default function SkillsSection() {
               <TiltCard key={category.category} category={category} sectionInView={inView} />
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

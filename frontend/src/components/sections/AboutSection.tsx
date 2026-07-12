@@ -1,14 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { MapPin, Mail, BookOpen } from 'lucide-react';
-import { fadeInLeft, fadeInRight, staggerContainer, staggerItem } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { gsap } from '@/lib/gsap-setup';
 import personal from '@/data/personal';
 import { education } from '@/data/resume';
 
 export default function AboutSection() {
-  const { ref, inView } = useScrollReveal();
+  const { ref } = useScrollReveal();
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -53,6 +51,12 @@ export default function AboutSection() {
         scrollTrigger: { trigger: '[data-about="profile-card"]', start: 'top 85%' },
       });
 
+      // ── Education title and container slide in ───────────────────────────
+      gsap.from('[data-about="edu-title"]', {
+        y: 30, opacity: 0, duration: 0.6, ease: 'power3.out',
+        scrollTrigger: { trigger: '[data-about="edu-title"]', start: 'top 85%' },
+      });
+
       // ── Education timeline: line draws down, then cards reveal ───────────
       gsap.from('[data-about="timeline-line"]', {
         scaleY: 0, transformOrigin: 'top center', duration: 1.2, ease: 'power2.inOut',
@@ -71,18 +75,13 @@ export default function AboutSection() {
 
   return (
     <section id="about" className="py-24 bg-white" ref={(node) => {
-      // Merge both refs
       (sectionRef as React.MutableRefObject<HTMLElement | null>).current = node;
       if (typeof ref === 'function') ref(node);
       else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
     }}>
       <div className="section-container">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-        >
-          <motion.div variants={staggerItem} className="mb-12">
+        <div>
+          <div className="mb-12">
             <span data-about="label" className="section-label">About Me</span>
             <h2 data-about="title" className="section-title overflow-hidden">
               {['Who', 'I', 'Am'].map(w => (
@@ -90,11 +89,11 @@ export default function AboutSection() {
               ))}
             </h2>
             <p className="section-subtitle">A little bit about my background and journey</p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             {/* Left — Profile card */}
-            <motion.div variants={fadeInLeft}>
+            <div>
               <div
                 data-about="profile-card"
                 className="brutal-card-lg p-8 bg-gradient-to-br from-primary/5 to-secondary/5 mb-6"
@@ -134,11 +133,11 @@ export default function AboutSection() {
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Right — Education timeline */}
-            <motion.div variants={fadeInRight}>
-              <h3 className="font-display font-bold text-xl mb-6 flex items-center gap-2">
+            <div>
+              <h3 data-about="edu-title" className="font-display font-bold text-xl mb-6 flex items-center gap-2">
                 <BookOpen size={20} className="text-primary" />
                 Education
               </h3>
@@ -151,9 +150,8 @@ export default function AboutSection() {
                     className="absolute left-0 top-0 bottom-0 w-0.5 bg-black border-l-2 border-black"
                   />
                   {education.map((edu) => (
-                    <motion.div
+                    <div
                       key={edu.id}
-                      variants={staggerItem}
                       data-about="edu-card"
                       className="relative mb-6"
                     >
@@ -183,13 +181,13 @@ export default function AboutSection() {
                           <p className="font-body text-xs text-slate-500 mt-2">{edu.description}</p>
                         )}
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

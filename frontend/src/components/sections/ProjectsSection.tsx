@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
-import { staggerContainer, staggerItem } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { gsap } from '@/lib/gsap-setup';
 import projects from '@/data/projects';
@@ -85,7 +83,7 @@ function ProjectCard({ project }: { project: Project }) {
 }
 
 export default function ProjectsSection() {
-  const { ref, inView } = useScrollReveal();
+  const { ref } = useScrollReveal();
   const sectionRef = useRef<HTMLElement>(null);
   const [filter, setFilter] = useState<Filter>('all');
 
@@ -134,12 +132,8 @@ export default function ProjectsSection() {
       else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
     }}>
       <div className="section-container">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-        >
-          <motion.div variants={staggerItem} className="mb-12">
+        <div>
+          <div className="mb-12">
             <span data-proj="label" className="section-label">Projects</span>
             <h2 data-proj="title" className="section-title overflow-hidden">
               {["What", "I've", "Built"].map(w => (
@@ -147,10 +141,10 @@ export default function ProjectsSection() {
               ))}
             </h2>
             <p className="section-subtitle">A selection of projects I'm proud of</p>
-          </motion.div>
+          </div>
 
           {/* Filter tabs */}
-          <motion.div variants={staggerItem} className="flex flex-wrap gap-3 mb-10">
+          <div className="flex flex-wrap gap-3 mb-10">
             {FILTERS.map(f => (
               <button
                 key={f}
@@ -165,7 +159,7 @@ export default function ProjectsSection() {
                 {f}
               </button>
             ))}
-          </motion.div>
+          </div>
 
           {/* Grid */}
           <div
@@ -182,7 +176,7 @@ export default function ProjectsSection() {
               No projects in this category yet.
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
