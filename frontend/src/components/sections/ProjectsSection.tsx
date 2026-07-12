@@ -164,7 +164,7 @@ export default function ProjectsSection() {
           {/* Grid */}
           <div
             data-proj="grid"
-            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8"
           >
             {filtered.map(project => (
               <ProjectCard key={project.id} project={project} />

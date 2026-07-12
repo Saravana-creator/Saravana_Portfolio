@@ -50,22 +50,6 @@ function SkeuoLaptop() {
           <span className="skeuo-key w-20 h-6 flex items-center justify-center text-[10px] font-mono text-slate-600">SPACE</span>
         </div>
       </div>
-
-      {/* Floating tech badges */}
-      {['React', 'Node.js', 'MongoDB'].map((tech, i) => (
-        <motion.div
-          key={tech}
-          className="glass absolute border border-white/30 text-white text-xs font-mono px-3 py-1 rounded-full"
-          style={{
-            top:  `${15 + i * 25}%`,
-            left: i % 2 === 0 ? '-20%' : '105%',
-          }}
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
-        >
-          {tech}
-        </motion.div>
-      ))}
     </div>
   );
 }
@@ -179,7 +163,7 @@ export default function HeroSection() {
 
             <h1
               data-gsap="headline"
-              className="font-display font-black text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-dark leading-tight mb-4 whitespace-nowrap"
+              className="font-display font-black text-xl sm:text-3xl md:text-4xl lg:text-[2.5rem] xl:text-5xl text-dark leading-tight mb-4 whitespace-normal lg:whitespace-nowrap"
             >
               Hi, I'm <span className="gradient-text">{personal.firstName}</span>
             </h1>
