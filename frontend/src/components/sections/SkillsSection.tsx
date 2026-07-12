@@ -6,18 +6,17 @@ import { gsap } from '@/lib/gsap-setup';
 import skills from '@/data/skills';
 import type { SkillCategory } from '@/types';
 
-// ── Category config — Restore the bold custom emojis, no default fallback emoji ──
+// Category color and theme config
 const categoryMeta: Record<string, {
-  emoji: string;
   bg: string;
   accent: string;
   shadow: string;
 }> = {
-  Frontend:  { emoji: '⚡', bg: 'from-violet-500/10 to-indigo-500/5',   accent: '#4F46E5', shadow: 'rgba(79,70,229,0.25)'   },
-  Backend:   { emoji: '🛠', bg: 'from-cyan-500/10 to-blue-500/5',       accent: '#06B6D4', shadow: 'rgba(6,182,212,0.25)'   },
-  Database:  { emoji: '🗄', bg: 'from-teal-500/10 to-emerald-500/5',    accent: '#14B8A6', shadow: 'rgba(20,184,166,0.25)'  },
-  Languages: { emoji: '💬', bg: 'from-purple-500/10 to-fuchsia-500/5',  accent: '#8B5CF6', shadow: 'rgba(139,92,246,0.25)'  },
-  Tools:     { emoji: '🔧', bg: 'from-amber-500/10 to-orange-500/5',    accent: '#F59E0B', shadow: 'rgba(245,158,11,0.25)'  },
+  Frontend:  { bg: 'from-violet-500/10 to-indigo-500/5',   accent: '#4F46E5', shadow: 'rgba(79,70,229,0.25)'   },
+  Backend:   { bg: 'from-cyan-500/10 to-blue-500/5',       accent: '#06B6D4', shadow: 'rgba(6,182,212,0.25)'   },
+  Database:  { bg: 'from-teal-500/10 to-emerald-500/5',    accent: '#14B8A6', shadow: 'rgba(20,184,166,0.25)'  },
+  Languages: { bg: 'from-purple-500/10 to-fuchsia-500/5',  accent: '#8B5CF6', shadow: 'rgba(139,92,246,0.25)'  },
+  Tools:     { bg: 'from-amber-500/10 to-orange-500/5',    accent: '#F59E0B', shadow: 'rgba(245,158,11,0.25)'  },
 };
 
 function levelLabel(level: number) {
@@ -32,7 +31,6 @@ function TiltCard({ category, sectionInView }: { category: SkillCategory; sectio
   const cardRef = useRef<HTMLDivElement>(null);
 
   const meta = categoryMeta[category.category] ?? {
-    emoji: '', // Remove default emoji
     bg: 'from-slate-500/10 to-gray-500/5',
     accent: '#64748B',
     shadow: 'rgba(100,116,139,0.25)',
@@ -116,36 +114,23 @@ function TiltCard({ category, sectionInView }: { category: SkillCategory; sectio
         />
 
         <div className="relative p-6 pt-7">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              {/* 3D emoji box (if exists) */}
-              {meta.emoji && (
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-xl border-2 border-black bg-white"
-                  style={{
-                    boxShadow: `3px 3px 0 #000, inset 0 1px 0 rgba(255,255,255,0.8)`,
-                    transform: 'translateZ(8px)',
-                  }}
-                >
-                  {meta.emoji}
-                </div>
-              )}
-              <h3 className="font-display font-bold text-base text-dark" style={{ transform: 'translateZ(4px)' }}>
-                {category.category}
-              </h3>
-            </div>
-
-            {/* Count badge */}
+          {/* Category Header — Restored original design (no emojis, colored squares + glass chip on right) */}
+          <div className="flex items-center gap-3 mb-5">
+            <div
+              className="w-3 h-3 border-2 border-black flex-shrink-0"
+              style={{ backgroundColor: meta.accent }}
+            />
+            <h3 className="font-display font-bold text-lg text-dark" style={{ transform: 'translateZ(4px)' }}>
+              {category.category}
+            </h3>
+            {/* Glass chip */}
             <span
-              className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full text-white"
+              className="ml-auto glass text-xs font-mono px-2 py-0.5 rounded-full border border-black/10 text-dark"
               style={{
-                backgroundColor: meta.accent,
-                boxShadow: `1px 1px 0 #000`,
                 transform: 'translateZ(6px)',
               }}
             >
-              {category.skills.length}
+              {category.skills.length} skills
             </span>
           </div>
 
@@ -219,11 +204,11 @@ export default function SkillsSection() {
         scrollTrigger: { trigger: '[data-skills="title"]', start: 'top 88%' },
       });
 
-      // ── Cards stagger entrance with 3D feel ──────────────────────────────
+      // ── Cards stagger entrance with 3D feel (Triggered by parent grid) ──
       gsap.from('[data-skills="card"]', {
         y: 60, opacity: 0, rotationX: 10, transformPerspective: 900,
         duration: 0.75, ease: 'power3.out', stagger: 0.12,
-        scrollTrigger: { trigger: '[data-skills="card"]', start: 'top 85%' },
+        scrollTrigger: { trigger: '[data-skills="grid"]', start: 'top 85%' },
       });
     }, el);
 
@@ -253,7 +238,7 @@ export default function SkillsSection() {
           </motion.div>
 
           {/* 3D tilt cards grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div data-skills="grid" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
             {skills.map((category) => (
               <TiltCard key={category.category} category={category} sectionInView={inView} />
             ))}

@@ -50,7 +50,7 @@ export default function AboutSection() {
       // ── Tags: pop in staggered ───────────────────────────────────────────
       gsap.from('[data-about="tag"]', {
         scale: 0, opacity: 0, duration: 0.4, ease: 'back.out(2)', stagger: 0.08,
-        scrollTrigger: { trigger: '[data-about="tag"]', start: 'top 90%' },
+        scrollTrigger: { trigger: '[data-about="profile-card"]', start: 'top 85%' },
       });
 
       // ── Education timeline: line draws down, then cards reveal ───────────
@@ -61,7 +61,7 @@ export default function AboutSection() {
 
       gsap.from('[data-about="edu-card"]', {
         x: 40, opacity: 0, duration: 0.6, ease: 'power3.out', stagger: 0.15,
-        scrollTrigger: { trigger: '[data-about="edu-card"]', start: 'top 85%' },
+        scrollTrigger: { trigger: '[data-about="timeline-line"]', start: 'top 85%' },
       });
 
     }, el);

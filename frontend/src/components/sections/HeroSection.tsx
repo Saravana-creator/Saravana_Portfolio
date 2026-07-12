@@ -89,16 +89,15 @@ export default function HeroSection() {
         y: -20, opacity: 0, duration: 0.6, ease: 'back.out(2)', delay: 0.1,
       });
 
-      // ── Headline: each word clips up from below ──────────────────────────
-      const words = el.querySelectorAll('[data-gsap="word"]');
-      gsap.from(words, {
-        y: '100%', opacity: 0, duration: 0.7,
-        ease: 'power4.out', stagger: 0.08, delay: 0.3,
+      // ── Headline: slide up and fade ──────────────────────────────────────
+      gsap.from('[data-gsap="headline"]', {
+        y: 35, opacity: 0, duration: 0.8,
+        ease: 'power3.out', delay: 0.3,
       });
 
       // ── Bio fade + slight upward drift ──────────────────────────────────
       gsap.from('[data-gsap="bio"]', {
-        opacity: 0, y: 30, duration: 0.8, ease: 'power2.out', delay: 0.65,
+        opacity: 0, y: 25, duration: 0.8, ease: 'power2.out', delay: 0.55,
       });
 
       // ── CTA button elastic bounce ────────────────────────────────────────
@@ -173,56 +172,49 @@ export default function HeroSection() {
       <div className="section-container w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-12">
           {/* Left — text */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div variants={staggerItem} className="mb-4">
+          <div className="space-y-6">
+            <div className="mb-4">
               <span data-gsap="badge" className="section-label">👋 Available for opportunities</span>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              variants={staggerItem}
-              className="font-display font-black text-4xl sm:text-5xl lg:text-[3.25rem] text-dark leading-tight mb-4 whitespace-nowrap overflow-hidden"
+            <h1
+              data-gsap="headline"
+              className="font-display font-black text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-dark leading-tight mb-4 whitespace-nowrap"
             >
-              <span data-gsap="word" className="inline-block">Hi,</span>{' '}
-              <span data-gsap="word" className="inline-block">I'm</span>{' '}
-              <span data-gsap="word" className="inline-block gradient-text">{personal.firstName}</span>
-            </motion.h1>
+              Hi, I'm <span className="gradient-text">{personal.firstName}</span>
+            </h1>
 
-            <motion.div variants={staggerItem} className="mb-6">
-              <div className="font-display font-bold text-2xl text-slate-600">
+            <div className="mb-6">
+              <div className="font-display font-bold text-xl sm:text-2xl text-slate-600">
                 <TypeAnimation
                   sequence={personal.roles.flatMap(r => [r, 2000])}
                   wrapper="span"
                   repeat={Infinity}
                 />
               </div>
-            </motion.div>
+            </div>
 
-            <motion.p
+            <p
               data-gsap="bio"
-              variants={staggerItem}
-              className="font-body text-slate-500 text-lg leading-relaxed max-w-lg mb-8"
+              className="font-body text-slate-500 text-base sm:text-lg leading-relaxed max-w-lg mb-8"
             >
               {personal.bio}
-            </motion.p>
+            </p>
 
             {/* CTAs */}
-            <motion.div variants={staggerItem} className="flex flex-wrap gap-4 mb-8">
+            <div className="flex flex-wrap gap-4 mb-8">
               <a
                 data-gsap="cta"
                 href="#projects"
                 onClick={e => { e.preventDefault(); document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' }); }}
-                className="brutal-btn bg-primary text-white text-sm"
+                className="brutal-btn bg-primary text-white text-sm animate-pulse-slow"
               >
                 View Projects
               </a>
-            </motion.div>
+            </div>
 
             {/* Social links — icon buttons */}
-            <motion.div variants={staggerItem} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
                 {socialLinks.map(({ icon: Icon, href, label }) => (
                   <a
@@ -241,8 +233,8 @@ export default function HeroSection() {
                 ))}
               </div>
               <span className="font-mono text-xs text-slate-400">{personal.location}</span>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Right — skeuomorphic laptop */}
           <motion.div

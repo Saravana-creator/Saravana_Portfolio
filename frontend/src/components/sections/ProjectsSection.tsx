@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
 import { staggerContainer, staggerItem } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -12,13 +12,9 @@ type Filter = typeof FILTERS[number];
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
-      className="brutal-card overflow-hidden group"
+    <div
+      data-proj="card"
+      className="brutal-card overflow-hidden group bg-white h-full"
     >
       {/* Project image / placeholder */}
       <div className="relative h-44 bg-gradient-to-br from-primary/10 to-secondary/10 border-b-2 border-black overflow-hidden">
@@ -84,7 +80,7 @@ function ProjectCard({ project }: { project: Project }) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -119,11 +115,11 @@ export default function ProjectsSection() {
         scrollTrigger: { trigger: '[data-proj="filter"]', start: 'top 90%' },
       });
 
-      // ── Project cards: stagger in from bottom with slight 3D ─────────────
+      // ── Project cards: stagger in from bottom with slight 3D (container-triggered) ──
       gsap.from('[data-proj="card"]', {
         y: 60, opacity: 0, rotationX: 8, transformPerspective: 600,
-        duration: 0.65, ease: 'power3.out', stagger: { amount: 0.5, from: 'start' },
-        scrollTrigger: { trigger: '[data-proj="card"]', start: 'top 90%' },
+        duration: 0.65, ease: 'power3.out', stagger: 0.12,
+        scrollTrigger: { trigger: '[data-proj="grid"]', start: 'top 85%' },
       });
 
     }, el);
@@ -172,18 +168,14 @@ export default function ProjectsSection() {
           </motion.div>
 
           {/* Grid */}
-          <motion.div
-            layout
+          <div
+            data-proj="grid"
             className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
           >
-            <AnimatePresence>
-              {filtered.map(project => (
-                <div key={project.id} data-proj="card">
-                  <ProjectCard project={project} />
-                </div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+            {filtered.map(project => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
 
           {filtered.length === 0 && (
             <div className="text-center py-16 text-slate-400 font-body">
