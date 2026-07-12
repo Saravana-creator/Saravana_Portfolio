@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
-import { Github, Linkedin, Mail, Download, ArrowDown } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowDown } from 'lucide-react';
 import { fadeInRight, staggerContainer, staggerItem } from '@/lib/animations';
 import personal from '@/data/personal';
 
@@ -70,9 +70,9 @@ function SkeuoLaptop() {
 
 export default function HeroSection() {
   const socialLinks = [
-    { icon: Github,   href: personal.social.github,  label: 'GitHub' },
-    { icon: Linkedin, href: personal.social.linkedin, label: 'LinkedIn' },
-    { icon: Mail,     href: `mailto:${personal.email}`, label: 'Email' },
+    { icon: Github,   href: personal.social.github,        label: 'GitHub',   value: 'Saravana-creator' },
+    { icon: Linkedin, href: personal.social.linkedin,       label: 'LinkedIn', value: 'saravana-perumal-m' },
+    { icon: Mail,     href: `mailto:${personal.email}`,     label: 'Gmail',    value: personal.email },
   ];
 
   return (
@@ -104,9 +104,9 @@ export default function HeroSection() {
 
             <motion.h1
               variants={staggerItem}
-              className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-dark leading-[1.05] mb-4"
+              className="font-display font-black text-4xl sm:text-5xl lg:text-[3.25rem] text-dark leading-tight mb-4 whitespace-nowrap"
             >
-              Hi, I'm <br />
+              Hi, I'm{' '}
               <span className="gradient-text">{personal.firstName}</span>
             </motion.h1>
 
@@ -136,32 +136,27 @@ export default function HeroSection() {
               >
                 View Projects
               </a>
-              <a
-                href={personal.resumeUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="brutal-btn bg-white text-dark flex items-center gap-2 text-sm"
-              >
-                <Download size={14} /> Resume
-              </a>
             </motion.div>
 
-            {/* Social links */}
-            <motion.div variants={staggerItem} className="flex items-center gap-3">
-              {socialLinks.map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={label}
-                  className="border-2 border-black p-2.5 hover:bg-black hover:text-white transition-colors duration-150"
-                  style={{ boxShadow: '3px 3px 0 #000' }}
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
-              <span className="font-mono text-xs text-slate-400 ml-2">{personal.location}</span>
+            {/* Social links with values */}
+            <motion.div variants={staggerItem} className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                {socialLinks.map(({ icon: Icon, href, label, value }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={label}
+                    className="flex items-center gap-2 border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors duration-150 group"
+                    style={{ boxShadow: '2px 2px 0 #000' }}
+                  >
+                    <Icon size={15} />
+                    <span className="font-mono text-xs font-medium">{value}</span>
+                  </a>
+                ))}
+              </div>
+              <span className="font-mono text-xs text-slate-400">{personal.location}</span>
             </motion.div>
           </motion.div>
 

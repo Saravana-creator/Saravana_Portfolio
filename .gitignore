@@ -1,22 +1,30 @@
-# ── Dependencies ─────────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# .gitignore — Saravana Perumal M · Portfolio (Frontend-only · Vite + React)
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+# ── Dependencies ──────────────────────────────────────────────────────────────
 node_modules/
 .pnp
 .pnp.js
 .yarn/install-state.gz
 
-# ── Build outputs ─────────────────────────────────────────────────────────────
+
+# ── Build & Output ────────────────────────────────────────────────────────────
 dist/
 dist-ssr/
 build/
 out/
 
-# ── Vite / TypeScript cache ───────────────────────────────────────────────────
+
+# ── Vite / TypeScript ─────────────────────────────────────────────────────────
 .vite/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
-# ── Environment & secrets ─────────────────────────────────────────────────────
-# NEVER commit secrets — store EmailJS keys etc. in .env.local
+
+# ── Environment & Secrets ─────────────────────────────────────────────────────
+# ⚠️  Never commit .env files — use .env.example as a safe template
 .env
 .env.local
 .env.*.local
@@ -24,12 +32,15 @@ tsconfig.tsbuildinfo
 .env.test.local
 .env.production.local
 
-# ── OS junk ───────────────────────────────────────────────────────────────────
+
+# ── OS Artifacts ──────────────────────────────────────────────────────────────
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
 ._*
+.Spotlight-V100
+.Trashes
 
 # Windows
 Thumbs.db
@@ -38,22 +49,36 @@ ehthumbs.db
 ehthumbs_vista.db
 desktop.ini
 $RECYCLE.BIN/
+*.lnk
 
 # Linux
 *~
 
-# ── Editor / IDE ──────────────────────────────────────────────────────────────
+
+# ── Editor & IDE ──────────────────────────────────────────────────────────────
+# VS Code — allow shared recommended settings; ignore personal/generated ones
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/launch.json
+
+# JetBrains (WebStorm, IntelliJ, etc.)
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+*.iml
+*.iws
+*.ipr
+
+# Vim / Neovim
+*.swp
+*.swo
+*.swn
 *.kate-swp
+Session.vim
+
+# Emacs
+\#*\#
+.#*
+
 
 # ── Logs ──────────────────────────────────────────────────────────────────────
 logs/
@@ -64,13 +89,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# ── Test coverage ─────────────────────────────────────────────────────────────
+
+# ── Testing & Coverage ────────────────────────────────────────────────────────
 coverage/
 *.lcov
 .nyc_output/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
 
-# ── Misc ──────────────────────────────────────────────────────────────────────
-*.local
+
+# ── Package Manager Caches ────────────────────────────────────────────────────
+.npm/
+.eslintcache
+.stylelintcache
+.parcel-cache/
 .cache/
 .temp/
 .tmp/
+
+
+# ── Vercel / Deployment ───────────────────────────────────────────────────────
+.vercel/
+.netlify/
+
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.local
+*.orig
+*.bak
+*.rej

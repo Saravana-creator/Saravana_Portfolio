@@ -11,8 +11,8 @@ export default {
         brutal:    "#000000",
       },
       fontFamily: {
-        display: ["'Syne'", "sans-serif"],
-        body:    ["'DM Sans'", "sans-serif"],
+        display: ["'Plus Jakarta Sans'", "sans-serif"],
+        body:    ["'Space Grotesk'", "sans-serif"],
         mono:    ["'JetBrains Mono'", "monospace"],
       },
       boxShadow: {

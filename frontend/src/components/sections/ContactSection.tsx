@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, Mail, MapPin, Github, Linkedin } from 'lucide-react';
 import { staggerContainer, staggerItem, fadeInLeft, fadeInRight } from '@/lib/animations';
@@ -6,8 +6,9 @@ import { useScrollReveal } from '@/hooks/useScrollReveal';
 import personal from '@/data/personal';
 import type { ContactForm } from '@/types';
 
-// ── Backend API Configuration ────────────────────────────────────────────────
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/contact';
+// ── Web3Forms Configuration ──────────────────────────────────────────────────
+const WEB3FORMS_ACCESS_KEY = '63a8cb3d-b507-45e4-a382-98feb5738c97';
+const WEB3FORMS_ENDPOINT   = 'https://api.web3forms.com/submit';
 // ─────────────────────────────────────────────────────────────────────────────
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
@@ -16,7 +17,6 @@ const INITIAL: ContactForm = { name: '', email: '', subject: '', message: '' };
 
 export default function ContactSection() {
   const { ref, inView } = useScrollReveal();
-  const formRef = useRef<HTMLFormElement>(null);
   const [form, setForm]     = useState<ContactForm>(INITIAL);
   const [status, setStatus] = useState<Status>('idle');
   const [errMsg, setErrMsg] = useState('');
@@ -24,41 +24,35 @@ export default function ContactSection() {
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('sending');
     setErrMsg('');
 
     try {
-      const response = await fetch(API_URL, {
+      const formData = new FormData(e.currentTarget);
+      formData.append('access_key', WEB3FORMS_ACCESS_KEY);
+      // Honeypot field — helps block bots
+      formData.append('botcheck', '');
+
+      const response = await fetch(WEB3FORMS_ENDPOINT, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          subject: form.subject,
-          message: form.message,
-        }),
+        body: formData,
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        // Extract validation errors or standard error message
-        const message = data.errors 
-          ? data.errors.map((e: any) => e.msg).join(' ') 
-          : (data.error || 'Failed to send message.');
-        throw new Error(message);
+      if (data.success) {
+        setStatus('success');
+        setForm(INITIAL);
+      } else {
+        throw new Error(data.message || 'Submission failed. Please try again.');
       }
-
-      setStatus('success');
-      setForm(INITIAL);
-    } catch (err: any) {
-      console.error('Contact form error:', err);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong.';
+      console.error('[ContactForm] Web3Forms error:', message);
       setStatus('error');
-      setErrMsg(err.message || 'Failed to send message. Please email me directly at ' + personal.email);
+      setErrMsg(message);
     }
   };
 
@@ -77,7 +71,7 @@ export default function ContactSection() {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
-            {/* Left — info */}
+            {/* Left — contact info */}
             <motion.div variants={fadeInLeft} className="lg:col-span-2 space-y-6">
               <div
                 className="border-2 border-white p-6"
@@ -87,7 +81,10 @@ export default function ContactSection() {
                   <Mail size={18} className="text-primary" />
                   <div>
                     <p className="font-body text-xs text-slate-400">Email</p>
-                    <a href={`mailto:${personal.email}`} className="font-mono text-sm text-white hover:text-primary transition-colors">
+                    <a
+                      href={`mailto:${personal.email}`}
+                      className="font-mono text-sm text-white hover:text-primary transition-colors"
+                    >
                       {personal.email}
                     </a>
                   </div>
@@ -101,7 +98,7 @@ export default function ContactSection() {
                 </div>
               </div>
 
-              {/* Social */}
+              {/* Social links */}
               <div className="flex gap-3">
                 {[
                   { icon: Github,   href: personal.social.github,  label: 'GitHub' },
@@ -132,11 +129,13 @@ export default function ContactSection() {
             {/* Right — form */}
             <motion.div variants={fadeInRight} className="lg:col-span-3">
               <form
-                ref={formRef}
                 onSubmit={onSubmit}
                 className="border-2 border-white bg-white/5 p-8 space-y-5"
                 style={{ boxShadow: '6px 6px 0 #fff' }}
               >
+                {/* Hidden honeypot — Web3Forms bot protection */}
+                <input type="checkbox" name="botcheck" className="hidden" readOnly />
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="font-mono text-xs text-slate-400 block mb-2">Name *</label>
@@ -188,18 +187,26 @@ export default function ContactSection() {
                   />
                 </div>
 
-                {/* Status messages */}
+                {/* Status feedback */}
                 {status === 'success' && (
-                  <div className="flex items-center gap-2 text-green-400 text-sm font-body">
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-green-400 text-sm font-body"
+                  >
                     <CheckCircle size={16} />
-                    Message sent! I'll get back to you soon.
-                  </div>
+                    Message sent! I'll get back to you soon. 🎉
+                  </motion.div>
                 )}
                 {status === 'error' && (
-                  <div className="flex items-center gap-2 text-red-400 text-sm font-body">
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-red-400 text-sm font-body"
+                  >
                     <AlertCircle size={16} />
                     {errMsg}
-                  </div>
+                  </motion.div>
                 )}
 
                 <button
