@@ -213,3 +213,11 @@ body {
   background: var(--color-primary);
   color: #fff;
 }
+
+/* ── 3D Utilities (Skills section tilt cards) ──────────────────────────── */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
