@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import {
   Monitor,
@@ -7,6 +7,7 @@ import {
   Database,
   Code2,
   Wrench,
+  type LucideIcon,
 } from 'lucide-react';
 import { staggerContainer, staggerItem } from '@/lib/animations';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -15,7 +16,7 @@ import type { SkillCategory } from '@/types';
 
 // ── Category config — Lucide icons replace emojis ──────────────────────────
 const categoryMeta: Record<string, {
-  Icon: React.FC<{ size?: number; className?: string }>;
+  Icon: LucideIcon;
   bg: string;
   accent: string;
   shadow: string;
@@ -53,10 +54,6 @@ function TiltCard({ category }: { category: SkillCategory }) {
   // Spring-smooth the tilt
   const springX = useSpring(rotateX, { stiffness: 200, damping: 20 });
   const springY = useSpring(rotateY, { stiffness: 200, damping: 20 });
-
-  // Derive a subtle Z-shadow translate from tilt
-  const shadowX = useTransform(springY, [-12, 12], ['-6px', '6px']);
-  const shadowY = useTransform(springX, [-12, 12], ['6px', '-6px']);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
